@@ -1,7 +1,7 @@
 pipeline{
     agent { 
         docker {
-            image 'node:lts-buster-slim' 
+            image 'node:16.13.2-slim' 
             args '-p 3000:3000'
         }
     }
@@ -23,12 +23,11 @@ pipeline{
                 sh './jenkins/scripts/kill.sh'
             }
         }
-        // stage('Build') { 
-        //     steps {
-        //         sh 'npm audit fix --force'
-        //         sh 'npm run build'
-        //     }
-        // }
+        stage('Build') { 
+            steps {
+                sh 'npm run build'
+            }
+        }
     }
 
 }
