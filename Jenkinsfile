@@ -25,6 +25,7 @@ pipeline{
         }
         stage('Build') { 
             steps {
+                sh 'npm audit fix --force'
                 sh 'npm run build'
             }
         }
