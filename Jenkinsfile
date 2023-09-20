@@ -23,12 +23,12 @@ pipeline{
                 sh './jenkins/scripts/kill.sh'
             }
         }
-        stage('Build') { 
-            steps {
-                sh 'npm audit fix --force'
-                sh 'npm run build'
-            }
-        }
+        // stage('Build') { 
+        //     steps {
+        //         sh 'npm audit fix --force'
+        //         sh 'npm run build'
+        //     }
+        // }
     }
 
 }
