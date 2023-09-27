@@ -36,24 +36,25 @@ pipeline {
         stage('Deploy'){
             steps{
                 input message: 'Lanjutkan ke tahap Deploy? (Click "Proceed" to continue)'
-                
-                def now = new Date()
-                def uniqueTag = now.format("yyMMdd.HHmm", TimeZone.getTimeZone('UTC'))
-                
-                withCredentials([usernamePassword(credentialsId: '2cbdfc4d-006c-4cfe-878c-50ac51fd5ae5', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
-                    // Login Docker
-                    sh 'docker login -u="${DOCKER_HUB_USERNAME}" -p="${DOCKER_HUB_PASSWORD}"'
-                    // Build Image
-                    sh "docker build -t albertushub/react-app:$uniqueTag ."
-                    // Push Image ke Docker Hub
-                    sh "docker push albertushub/react-app:$uniqueTag"
-                    // Logout Docker
-                    sh "docker logout"
+                script{
+                    def now = new Date()
+                    def uniqueTag = now.format("yyMMdd.HHmm", TimeZone.getTimeZone('UTC'))
+                    
+                    withCredentials([usernamePassword(credentialsId: '2cbdfc4d-006c-4cfe-878c-50ac51fd5ae5', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
+                        // Login Docker
+                        sh 'docker login -u="${DOCKER_HUB_USERNAME}" -p="${DOCKER_HUB_PASSWORD}"'
+                        // Build Image
+                        sh "docker build -t albertushub/react-app:$uniqueTag ."
+                        // Push Image ke Docker Hub
+                        sh "docker push albertushub/react-app:$uniqueTag"
+                        // Logout Docker
+                        sh "docker logout"
+                    }
+                    // Menggunakan SSH untuk trigger docker pull
+                    // sshagent(['29846a1c-7648-4212-a7a8-29e1abb7e741']) {
+                    //     // some block
+                    // }
                 }
-                // Menggunakan SSH untuk trigger docker pull
-                // sshagent(['29846a1c-7648-4212-a7a8-29e1abb7e741']) {
-                //     // some block
-                // }
             }
         }
     }
