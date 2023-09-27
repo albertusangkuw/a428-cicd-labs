@@ -1,0 +1,7 @@
+# Submission Dicoding - Proyek Membangun CI/CD Pipeline dengan Jenkins
+# Albertus Septian Angkuw 
+
+# Menggunakan nginx sebagai static web server
+FROM nginx
+# Memindahkan hasil build aplikasi ke root web server
+COPY build /usr/share/nginx/html
