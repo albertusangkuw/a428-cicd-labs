@@ -1,35 +1,39 @@
 // Submission Dicoding - Proyek Membangun CI/CD Pipeline dengan Jenkins
 // Albertus Septian Angkuw 
 pipeline {
-    agent {
-        docker {
-            image 'node:16-buster-slim'
-            args '-p 3000:3000'
-        }
-    }
+    agent any
     stages {
         // Trigger by ngrok (webhook proxy)
-        stage('Build') {
-            steps {
-                sh 'npm install'
+        stage("Prepare"){
+            agent {
+                docker {
+                    image 'node:16-buster-slim'
+                    args '-p 3000:3000'
+                }
             }
-        }
-        stage('Test') { 
-            steps {
-                sh './jenkins/scripts/test.sh' 
-            }
-        }
-
-        stage('Deliver'){
-            steps{
-                script{
-                    String pidNPM
-                    pidNPM = sh(script: 'npm start > log-server.txt 2>&1 & echo "$!"', returnStdout: true)
-                    println "PID Server: $pidNPM"
-                    sleep time: 1, unit: 'MINUTES'
-                    //Clean Up
-                    sh "kill $pidNPM"
-                    cat log-server.txt
+            stages{
+                stage('Build') {
+                    steps {
+                        sh 'npm install'
+                    }
+                }
+                stage('Test') { 
+                    steps {
+                        sh './jenkins/scripts/test.sh' 
+                    }
+                }
+                stage('Deliver'){
+                    steps{
+                        script{
+                            String pidNPM
+                            pidNPM = sh(script: 'npm start > log-server.txt 2>&1 & echo "$!"', returnStdout: true)
+                            println "PID Server: $pidNPM"
+                            sleep time: 1, unit: 'MINUTES'
+                            //Clean Up
+                            sh "kill $pidNPM"
+                            sh "cat log-server.txt"
+                        }
+                    }
                 }
             }
         }
@@ -40,7 +44,9 @@ pipeline {
                     def now = new Date()
                     def uniqueTag = now.format("yyMMdd.HHmm", TimeZone.getTimeZone('UTC'))
                     
-                    withCredentials([usernamePassword(credentialsId: '2cbdfc4d-006c-4cfe-878c-50ac51fd5ae5', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
+                    println "Akan membuat image dengan nama: albertushub/react-app:$uniqueTag"
+                    sh "cp Dockerfile.deploy Dockerfile"
+                    withCredentials([usernamePassword(credentialsId: '6abe9262-12bf-4500-8b64-bf7181fd687b', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
                         // Login Docker
                         sh 'docker login -u="${DOCKER_HUB_USERNAME}" -p="${DOCKER_HUB_PASSWORD}"'
                         // Build Image
