@@ -28,7 +28,7 @@ pipeline {
                             String pidNPM
                             pidNPM = sh(script: 'npm start > log-server.txt 2>&1 & echo "$!"', returnStdout: true)
                             println "PID Server: $pidNPM"
-                            sleep time: 1, unit: 'MINUTES'
+                            // sleep time: 1, unit: 'MINUTES'
                             //Clean Up
                             sh "kill $pidNPM"
                             sh "cat log-server.txt"
@@ -56,10 +56,30 @@ pipeline {
                         // Logout Docker
                         sh "docker logout"
                     }
-                    // Menggunakan SSH untuk trigger docker pull
-                    // sshagent(['29846a1c-7648-4212-a7a8-29e1abb7e741']) {
-                    //     // some block
-                    // }
+
+                    def remote = [:]
+                    // Label Remote Host
+                    remote.name = "ec2-aws"
+                    // IP Host
+                    remote.host = "3.0.182.170"
+                    remote.allowAnyHosts = true
+                    // Menggunakan SSH Pipeline Steps Plugins untuk trigger docker pull pada remote server
+                    withCredentials([sshUserPrivateKey(credentialsId: 'a85c8863-8a79-4370-8d84-3812897c24ea', keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'user')]) {
+                        remote.user = user
+                        remote.identityFile = identity
+                        stage("Remote") {
+                            // sshCommand remote: remote, command: 'echo "Hello from Jenkins" > hello.txt'
+                            // Pull Container yang baru dibuild dengan tag yang sudah dibuat
+                            sshCommand remote: remote, command: "docker pull albertushub/react-app:$uniqueTag"
+                            // Hentikan container app yang sudah berjalan
+                            sshCommand remote: remote, command: 'docker stop react-app'
+                            // Run Container yang baru
+                            sshCommand remote: remote, command: "docker run --name=react-app -p 80:80 -d  albertushub/react-app:$uniqueTag"
+                            // Hapus container app yang lawas
+                            sshCommand remote: remote, command: 'docker rm react-app'
+                        }
+                    }
+                    println("Selesai 🔥🚀 !-------")
                 }
             }
         }
