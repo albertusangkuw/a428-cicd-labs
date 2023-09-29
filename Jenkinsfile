@@ -32,6 +32,7 @@ pipeline {
                             //Clean Up
                             sh "kill $pidNPM"
                             sh "cat log-server.txt"
+                            sh "npm run build"
                         }
                     }
                 }
