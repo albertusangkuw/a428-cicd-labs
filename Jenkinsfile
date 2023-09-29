@@ -29,9 +29,13 @@ pipeline {
                             pidNPM = sh(script: 'npm start > log-server.txt 2>&1 & echo "$!"', returnStdout: true)
                             println "PID Server: $pidNPM"
                             sleep time: 1, unit: 'MINUTES'
-                            //Clean Up
+                            // Clean Up, Aplikasi yang dijalankan
                             sh "kill $pidNPM"
+                            // Menampilkan log dari aplikasi yang dijalankan
                             sh "cat log-server.txt"
+                            // Menghapus build sebelumnya bila ada
+                            sh "rm -r build | true"
+                            // Build aplikasi
                             sh "npm run build"
                         }
                     }
