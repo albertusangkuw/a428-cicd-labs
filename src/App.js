@@ -8,10 +8,10 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React - Deploy by Jenkins, hostes in EC2</h1>          
+          <h1 className="App-title">Welcome to React App - Deployed by Jenkins, hosted in EC2</h1>          
         </header>
         <p className="App-intro">
-          Albertus Septian Angkuw, <code>Submission untuk Proyek Membangun CI/CD Pipeline dengan Jenkins</code>
+          Albertus Septian Angkuw, Dicoding:<code>Submission untuk Proyek Membangun CI/CD Pipeline dengan Jenkins</code>
         </p>
       </div>
     );
