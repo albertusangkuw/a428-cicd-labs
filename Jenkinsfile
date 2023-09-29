@@ -37,9 +37,13 @@ pipeline {
                 }
             }
         }
-        stage('Deploy'){
+        stage('Manual Approval'){
             steps{
                 input message: 'Lanjutkan ke tahap Deploy? (Click "Proceed" to continue)'
+            }
+        }
+        stage('Deploy'){
+            steps{
                 script{
                     def now = new Date()
                     def uniqueTag = now.format("yyMMdd.HHmm", TimeZone.getTimeZone('UTC'))
