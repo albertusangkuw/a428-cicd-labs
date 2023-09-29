@@ -28,7 +28,7 @@ pipeline {
                             String pidNPM
                             pidNPM = sh(script: 'npm start > log-server.txt 2>&1 & echo "$!"', returnStdout: true)
                             println "PID Server: $pidNPM"
-                            // sleep time: 1, unit: 'MINUTES'
+                            sleep time: 1, unit: 'MINUTES'
                             //Clean Up
                             sh "kill $pidNPM"
                             sh "cat log-server.txt"
@@ -73,10 +73,11 @@ pipeline {
                             sshCommand remote: remote, command: "docker pull albertushub/react-app:$uniqueTag"
                             // Hentikan container app yang sudah berjalan
                             sshCommand remote: remote, command: 'docker stop react-app'
-                            // Run Container yang baru
-                            sshCommand remote: remote, command: "docker run --name=react-app -p 80:80 -d  albertushub/react-app:$uniqueTag"
                             // Hapus container app yang lawas
                             sshCommand remote: remote, command: 'docker rm react-app'
+                            // Run Container yang baru
+                            sshCommand remote: remote, command: "docker run --name=react-app -p 80:80 -d  albertushub/react-app:$uniqueTag"
+                            
                         }
                     }
                     println("Selesai 🔥🚀 !-------")
